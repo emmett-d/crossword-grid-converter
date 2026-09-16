@@ -1,0 +1,12 @@
+{
+  "name": "crossword-grid-converter",
+  "version": "0.1.0",
+  "description": "Converts crossword grids between a plain-text format and a JSON interchange format",
+  "type": "module",
+  "main": "dist/parser.js",
+  "types": "dist/parser.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  }
+}
