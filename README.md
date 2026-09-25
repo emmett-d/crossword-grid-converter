@@ -12,9 +12,10 @@ This project converts between:
 - **crossword JSON** (`.cxj`) — a plain JSON interchange format meant to be
   read by other programs
 
-Right now only grid text → in-memory model is implemented (`parseGridText`
-in `src/parser.ts`). JSON serialization and the reverse direction are not
-built yet; see Roadmap.
+Right now grid text → in-memory model (`parseGridText` in `src/parser.ts`)
+and in-memory model → JSON (`toCrosswordJson`/`serializeToJson` in
+`src/serializer.ts`) are implemented. Parsing JSON back into the model is
+not built yet; see Roadmap.
 
 ## The grid text format
 
@@ -106,9 +107,48 @@ Row-length mismatches, malformed clue lines, duplicate clue numbers, and
 answers whose length disagrees with the declared clue length are all
 reported the same way, with the pointer landing on the exact column.
 
+## The crossword JSON format
+
+`toCrosswordJson` turns a `CrosswordPuzzle` into a plain object; call
+`serializeToJson` if you want the JSON text directly. The grid is encoded
+as an array of row strings using the same alphabet as the text format
+(`#` block, `.` blank, `A`-`Z` known solution), so a `.cxj` grid reads the
+same way a `.gtxt` one does:
+
+```ts
+import { parseGridText } from "./src/parser.js";
+import { serializeToJson } from "./src/serializer.js";
+
+const puzzle = parseGridText(`GRID:
+###
+#.#
+###
+
+ACROSS:
+2. Middle letter (1) = X
+
+DOWN:
+`);
+
+console.log(serializeToJson(puzzle));
+```
+
+```json
+{
+  "title": null,
+  "author": null,
+  "width": 3,
+  "height": 3,
+  "grid": ["###", "#X#", "###"],
+  "clues": {
+    "across": [{ "number": 2, "text": "Middle letter", "length": 1, "answer": "X" }],
+    "down": []
+  }
+}
+```
+
 ## Roadmap
 
-- Serialize the parsed model to crossword JSON (`.cxj`)
 - Parse crossword JSON back into the model, with matching JSON-path style
   error locations
 - Compute standard crossword numbering from the grid and cross-check it
